@@ -1,8 +1,9 @@
-version: '3'
+version: '3.7'
+
 services:
   postgres:
     image: postgres:15
-    restart: unless-stopped
+    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -16,18 +17,57 @@ services:
       retries: 5
 
   zipline:
+    #build:
+    #context: .
+    #dockerfile: Dockerfile
+    #env_file:
+      #- .env.local
     image: ghcr.io/diced/zipline
     ports:
-      - '3000:3000'
-    restart: unless-stopped
+      - '127.0.0.1:5200:5200'
+    restart: always
     environment:
-      - CORE_RETURN_HTTPS=false
+      - CHUNKS_CHUNKS_SIZE=25mb
+      - CHUNKS_MAX_SIZE=95mb
+      - CHUNKS_ENABLED=true
+      - CORE_HTTPS=true
+      - CORE_RETURN_HTTPS=true
+      - CORE_STATS_INTERVAL=600
+      - CORE_COMPRESSION_ENABLED=true
+      - CORE_COMPRESSION_THRESHOLD=1gb
+      - CORE_COMPRESSION_ON_DASHBOARD=true
+      - CORE_TEMP_DIRECTORY=/tmp/zipline-temp
+      - DISCORD_URL=changethis
+      - EXIF_ENABLED=true
+      - EXIF_REMOVE_GPS=true
+      - FEATURES_INVITES=true
+      - FEATURES_INVITES_LENGTH=6
+      - FEATURES_OAUTH_REGISTRATION=true
+      - FEATURES_OAUTH_LOGIN_ONLY=false
+      - FEATURES_USER_REGISTRATION=true
+      - MFA_TOTP_ENABLED=true
+      - MFA_TOTP_ISSUER=bffr.wtf
+      - RATELIMIT_USER=5
+      - RATELIMIT_ADMIN=2
+      - UPLOADER_DEFAULT_FORMAT=RANDOM
+      - UPLOADER_ROUTE=/u
+      - UPLOADER_LENGTH=6
+      - UPLOADER_ADMIN_LIMIT=50mb
+      - UPLOADER_USER_LIMIT=25mb
+      - UPLOADER_FORMAT_DATE='YYYY-MM-DD_HH:mm:ss'
+      - URLS_ROUTE=/go
+      - URLS_LENGTH=4
+      - WEBSITE_TITLE=changethis
+      - WEBSITE_SHOW_FILES_PER_USER=true
+      - WEBSITE_EXTERNAL_LINKS=changethis
+      - WEBSITE_DISABLE_MEDIA_PREVIEW=false
       - CORE_SECRET=changethis
       - CORE_HOST=0.0.0.0
-      - CORE_PORT=3000
+      - CORE_PORT=5200
       - CORE_DATABASE_URL=postgres://postgres:postgres@postgres/postgres
       - CORE_LOGGER=true
     volumes:
+      #- './import:/zipline/import'
       - './uploads:/zipline/uploads'
       - './public:/zipline/public'
     depends_on:
